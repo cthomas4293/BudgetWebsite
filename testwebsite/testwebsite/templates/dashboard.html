@@ -1,0 +1,305 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="dashboard--main container p-4">
+        <div class="row mt-4">
+            <div class="p-0 d-flex justify-content-end fs-5">
+                <p class="d-flex align-self-center pe-3 mb-0">Starting Balance: </p>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    {% if starting_balance %}
+                        ${{ starting_balance[-1].starting_balance }}
+                        {% else %}
+                        $0.00
+                    {% endif %}
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Enter Your Starting Balance For October</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form action="#" method="POST">
+                              {{ balance_form.hidden_tag() }}
+                              <div class="d-flex">
+                                  {% if balance_form.starting_balance.errors %}
+                                      {{ balance_form.starting_balance(class='balance_form-control is-invalid') }}
+                                      <div class="invalid-feedback">
+                                        {% for error in balance_form.starting_balance.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                      </div>
+                                      {% else %}
+                                      {{ balance_form.starting_balance(class='form-control-sm me-5') }}
+                                  {% endif %}
+                                {{ balance_form.submit(class='btn btn-primary ms-3 me-2') }}
+                                <button type="button" class="btn btn-secondary pe-3" data-bs-dismiss="modal">Close</button>
+                              </div>
+                          </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 p-0">
+                <h1 class="mb-0 p-0 header--orange">Monthly Budget</h1>
+            </div>
+        </div>
+        <div class="row justify-content-between">
+{#            Bar Graph #}
+            <div class="col-5 mt-5 d-flex align-items-center justify-content-center">
+                <canvas id="balanceChart"></canvas>
+            </div>
+{#            Savings Analytics #}
+            <div class="col-5 mt-5 p-2 d-flex flex-column align-items-center" style="background-color: #ebedef">
+{#                    todo: create if-statement (if increase or decrease)#}
+                <div class="pb-2 d-flex justify-content-center flex-column text-center" style="width: 65%">
+                    <p class="mt-3 fs-2 m-0">+50%</p>
+                    <p class="fs-6 m-0 pb-3" style="border-bottom: 1px dashed darkgray">Increase in Total Savings</p>
+                </div>
+                <div class="d-flex justify-content-center flex-column text-center" style="width: 65%">
+                    <p class="fs-2 m-0">$500</p>
+                    <p class="mb-3 fs-6 m-0">Saved This Month</p>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-between mt-5">
+            <div class="col-5 p-0">
+                <p class="fs-3 fw-bold">Expenses</p>
+            </div>
+            <div class="col-5 p-0">
+                <p class="fs-3 fw-bold">Income</p>
+            </div>
+        </div>
+        <div class="row justify-content-between">
+            <div class="col ps-5 pe-5 justify-content-between">
+                <canvas id="expenseChart" height="70%"></canvas>
+            </div>
+            <div class="col ps-5 pe-5 justify-content-between">
+                <canvas id="incomeChart" height="70%"></canvas>
+            </div>
+        </div>
+{#       Dashboard Forms #}
+        <div class="row justify-content-between mt-5">
+            <div class="col ps-5 pe-5 mb-5">
+                <p class="fs-3 header--orange">Expense</p>
+                <table class="table dashboard--table float-end">
+                    <tr>
+                        <th></th>
+                        <th>Planned</th>
+                        <th>Actual</th>
+                        <th>Diff</th>
+                    </tr>
+                    <tr>
+                        <th class="total--header fw-light">Totals</th>
+                        <th class="fw-light fst-italic">${{ expense_total }}</th>
+                        <th class="fw-light fst-italic">$0.00</th>
+                        <th class="fw-light fst-italic">-$0.00</th>
+                    </tr>
+                    {% for row in expense_categories %}
+                        <tr>
+                            <td>{{ row.name }}</td>
+                            <td>${{ row.planned_amount }}</td>
+                            <td>${{ cats }}</td>
+                            <td>$0.00</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div class="d-flex justify-content-between float-end" style="width: 100%">
+                    <!-- Add Expense Button -->
+                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addModalExpense" style="width: 45%; background-color: #ebedef">
+                      Add
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="addModalExpense" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Add a Category</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                              <form action="" method="POST">
+                                {{ add_expense_category_form.hidden_tag() }}
+                                {#  name  #}
+                                <div class="mb-3">
+                                    {{ add_expense_category_form.expense_name.label(class='form-control-label mb-2') }}
+                                    {% if add_expense_category_form.errors %}
+                                        {{ add_expense_category_form.expense_name(class='form-control is-invalid') }}
+                                        <div class="invalid-feedback">
+                                            {% for error in add_expense_category_form.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ add_expense_category_form.expense_name(class='form-control') }}
+                                    {% endif %}
+                                </div>
+
+                                {#  planned  #}
+                                <div class="mb-3">
+                                    {{ add_expense_category_form.expense_planned.label(class='form-control-label mb-2') }}
+                                    {% if add_expense_category_form.errors %}
+                                        {{ add_expense_category_form.expense_planned(class='form-control is-invalid') }}
+                                        <div class="invalid-feedback">
+                                            {% for error in add_expense_category_form.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ add_expense_category_form.expense_planned(class='form-control') }}
+                                    {% endif %}
+                                </div>
+                                {{ add_expense_category_form.expense_submit(class='btn btn-primary ms-3 me-2') }}
+                                <button type="button" class="btn btn-secondary pe-3" data-bs-dismiss="modal">Close</button>
+                              </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <!-- Remove Expense Button -->
+                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#removeModalExpense" style="width: 45%; background-color: #ebedef">
+                      Remove
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="removeModalExpense" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Choose a Category</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <form class="d-flex" action="" method="POST">
+                                <select class="me-2 form-control" name="RemoveExpense" id="categories">
+                                  {% for cat in expense_categories %}
+                                      <option value="{{ cat.name }}">{{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" value="RemoveIncome" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col pe-5 ps-5">
+                <p class="fs-3 header--orange">Income</p>
+                <table class="table dashboard--table float-end">
+{#                todo: automate this with for-statement#}
+                    <tr>
+                        <th></th>
+                        <th>Planned</th>
+                        <th>Actual</th>
+                        <th>Diff</th>
+                    </tr>
+                    <tr>
+                        <th class="total--header fw-light">Totals</th>
+                        <th class="fw-light fst-italic">${{ income_total }}</th>
+                        <th class="fw-light fst-italic">$0.00</th>
+                        <th class="fw-light fst-italic">-$0.00</th>
+                    </tr>
+                    {% for row in income_categories %}
+                        <tr>
+                            <td>{{ row.name }}</td>
+                            <td>${{ row.planned_amount }}</td>
+                            <td>$0.00</td>
+                            <td>$0.00</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div class="d-flex justify-content-between float-end" style="width: 100%">
+                    <!-- Add Income Button -->
+                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addModalIncome" style="width: 45%; background-color: #ebedef">
+                      Add
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="addModalIncome" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5">Add Category</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <form action="" method="POST">
+                                {{ add_income_category_form.hidden_tag() }}
+                                {#  name  #}
+                                <div class="mb-3">
+                                    {{ add_income_category_form.income_name.label(class='form-control-label mb-2') }}
+                                    {% if add_income_category_form.errors %}
+                                        {{ add_income_category_form.income_name(class='form-control is-invalid') }}
+                                        <div class="invalid-feedback">
+                                            {% for error in add_income_category_form.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ add_income_category_form.income_name(class='form-control') }}
+                                    {% endif %}
+                                </div>
+
+                                {#  planned  #}
+                                <div class="mb-3">
+                                    {{ add_income_category_form.income_planned.label(class='form-control-label mb-2') }}
+                                    {% if add_income_category_form.errors %}
+                                        {{ add_income_category_form.income_planned(class='form-control is-invalid') }}
+                                        <div class="invalid-feedback">
+                                            {% for error in add_income_category_form.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ add_income_category_form.income_planned(class='form-control') }}
+                                    {% endif %}
+                                </div>
+                                {{ add_income_category_form.income_submit(class='btn btn-primary ms-3 me-2') }}
+                                <button type="button" class="btn btn-secondary pe-3" data-bs-dismiss="modal">Close</button>
+                              </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <!-- Remove Income Button -->
+                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#removeModalIncome" style="width: 45%; background-color: #ebedef">
+                      Remove
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="removeModalIncome" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Choose a Category</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <form class="d-flex" action="" method="POST">
+                                <select class="me-2 form-control" name="RemoveIncome" id="categories">
+                                  {% for cat in income_categories %}
+                                      <option value="{{ cat }}">{{ cat }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" value="RemoveIncome" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="../static/dashboard.js"></script>
+{% endblock content %}

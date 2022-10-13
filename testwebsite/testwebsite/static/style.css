@@ -1,0 +1,73 @@
+.main-content {
+    background-color: #f8f8f8;
+    width: 40vw!important;
+    /* offset-x | offset-y | blur-radius | spread-radius | color */
+    box-shadow: 0 30px 45px 1px rgba(0, 0, 0, 0.1);
+}
+
+.home--container {
+    background-image: linear-gradient(to right, #a0b5eb, #c9f0e4);
+    color: gray;
+}
+
+.banner {
+    width: 100vw;
+    height: 400px;
+    background-image: linear-gradient(to bottom, #a0b5eb, #c9f0e4);
+    color: white;
+}
+
+.starting--balance {
+    background-color: #fff2ed !important;
+}
+
+.header--orange {
+    color: #f46524;
+}
+
+.dashboard--table tr th:not(:nth-child(1)), .dashboard--table tr td:not(:nth-child(1)) {
+    text-align: right;
+}
+
+.dashboard--table tr td:nth-child(1), .dashboard--table tr td:nth-child(2){
+    background-color: #fcece6;
+}
+
+.dashboard--table tr th:first-child {
+    width: 40%;
+}
+
+.total--header {
+    font-size: 0.80em;
+    float: bottom;
+}
+
+.font-awesome-icons {
+    font-size: 0.98em;
+}
+
+.tracking-header {
+    align-items: center;
+}
+
+.tracking-header:after {
+    margin: 20px auto;
+}
+
+.tracking-header::after {
+    content: "";
+    height: 4px;
+    width: 80px;
+    display: block;
+    background-image: linear-gradient(to right, rgba(160, 181, 235, 0.68), rgba(201, 240, 228, 0.61));
+}
+
+.footer {
+    background-color: rgb(180, 165, 194);
+    padding: 30px 30px 30px 30px;
+    color: #fff;
+    margin-top: 200px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

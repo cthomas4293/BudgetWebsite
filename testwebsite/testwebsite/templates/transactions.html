@@ -1,0 +1,213 @@
+{% extends "layout.html" %}
+{% block content %}
+    {# Expense Transactions #}
+    <div class="row mt-5">
+        <div class="col pe-5 ps-5 mb-5">
+            <p class="fs-3 pb-3 header--orange border-bottom border-dark border-opacity-25">Expense</p>
+            <table class="table">
+                <tr class="">
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Amount</th>
+                    <th class="text-center">Description</th>
+                    <th class="text-center">Category</th>
+                </tr>
+                {% for row in expense_table_data %}
+                    <tr class="">
+                        <td class="text-center">{{ row.trans_id }}</td>
+                        <td class="text-center">{{ row.date[0:11] }}</td> {# todo date is using current date instead of date inputed #}
+                        <td class="text-center">${{ row.amount }}</td>
+                        <td class="text-center">{{ row.description }}</td>
+                        <td class="text-center">{{ row.category }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div class="d-flex justify-content-between float-end" style="width: 100%">
+                <!-- Add Transaction Button trigger modal -->
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#expense_transaction_modal" style="width: 45%; background-color: #ebedef">
+                  Add
+                </button>
+
+                <!-- Add Transaction Modal -->
+                <div class="modal fade" id="expense_transaction_modal" tabindex="-1" aria-labelledby="expense_transaction_modal_label" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="expense_transaction_modal_label">Add Expense Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form action="" method="POST">
+                              {{ expense_form.hidden_tag() }}
+                              {{ expense_form.exp_txn_amount.label(class='form-control-label mb-2') }}
+                              {% if expense_form.exp_txn_amount.errors %}
+                                  {{ expense_form.exp_txn_amount(class='form-control is-invalid') }}
+                                  <div class="invalid-feedback">
+                                    {% for error in expense_form.exp_txn_amount.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                  </div>
+                                  {% else %}
+                                  {{ expense_form.exp_txn_amount(class='form-control') }}
+                              {% endif %}
+                              {{ expense_form.exp_txn_description.label(class='form-control-label mb-2 mt-3') }}
+                              {% if expense_form.exp_txn_description.errors %}
+                                  {{ expense_form.exp_txn_description(class='form-control is-invalid') }}
+                                  <div class="invalid-feedback">
+                                    {% for error in expense_form.exp_txn_description.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                  </div>
+                                  {% else %}
+                                  {{ expense_form.exp_txn_description(class='form-control') }}
+                              {% endif %}
+                              <label class="mb-2 mt-3 form-control-label" for="">Category</label>
+                                <select class="me-2 form-control" name="tx_category" id="categories">
+                                    {% for cat in expense_categories %}
+                                      <option value="{{ cat.name }}">{{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                              {{ expense_form.exp_txn_submit_transaction(class='btn btn-primary mt-3') }}
+                          </form>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+
+                <!-- Remove Transaction Button trigger modal -->
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#remove_expense_transaction_modal" style="width: 45%; background-color: #ebedef">
+                  Remove
+                </button>
+
+                <!-- Remove Transaction Modal -->
+                <div class="modal fade" id="remove_expense_transaction_modal" tabindex="-1" aria-labelledby="remove_expense_transaction_modal_label" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="remove_expense_transaction_modal_label">Remove Expense Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form class="d-flex" action="" method="POST">
+                                <select class="me-2 form-control" name="RemoveExpenseTransaction" id="categories">
+                                  {% for txn in expense_table_data %}
+                                      <option value="{{ txn.trans_id }}">{{ txn.trans_id }}: {{ txn.description }}</option>
+                                  {% endfor %}
+                                </select>
+                                <button type="submit" value="RemoveExpenseTransaction" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
+                            </form>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+
+            </div>
+        </div>
+    </div>
+
+    {# Inome Transactions #}
+    <div class="row mt-5">
+        <div class="col pe-5 ps-5 mb-5">
+            <p class="fs-3 pb-3 header--orange border-bottom border-dark border-opacity-25">Income</p>
+            <table class="table">
+                <tr class="">
+                    <th class="text-center">ID</th>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Amount</th>
+                    <th class="text-center">Description</th>
+                    <th class="text-center">Category</th>
+                </tr>
+                {% for row in income_table_data %}
+                    <tr class="">
+                        <td class="text-center">{{ row.trans_id }}</td>
+                        <td class="text-center">{{ row.date[0:11] }}</td> {# todo date is using current date instead of date inputed #}
+                        <td class="text-center">${{ row.amount }}</td>
+                        <td class="text-center">{{ row.description }}</td>
+                        <td class="text-center">{{ row.category }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div class="d-flex justify-content-between float-end" style="width: 100%">
+                <!-- Add Transaction Button trigger modal -->
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#income_transaction_modal" style="width: 45%; background-color: #ebedef">
+                  Add
+                </button>
+
+                <!-- Add Transaction Modal -->
+                <div class="modal fade" id="income_transaction_modal" tabindex="-1" aria-labelledby="income_transaction_modal_label" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="income_transaction_modal_label">Add Income Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form action="" method="POST">
+                              {{ income_form.hidden_tag() }}
+                              {{ income_form.inc_txn_amount.label(class='form-control-label mb-2') }}
+                              {% if income_form.inc_txn_amount.errors %}
+                                  {{ income_form.inc_txn_amount(class='form-control is-invalid') }}
+                                  <div class="invalid-feedback">
+                                    {% for error in income_form.inc_txn_amount.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                  </div>
+                                  {% else %}
+                                  {{ income_form.inc_txn_amount(class='form-control') }}
+                              {% endif %}
+                              {{ income_form.inc_txn_description.label(class='form-control-label mb-2 mt-3') }}
+                              {% if income_form.inc_txn_description.errors %}
+                                  {{ income_form.inc_txn_description(class='form-control is-invalid') }}
+                                  <div class="invalid-feedback">
+                                    {% for error in income_form.inc_txn_description.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                  </div>
+                                  {% else %}
+                                  {{ income_form.inc_txn_description(class='form-control') }}
+                              {% endif %}
+                              <label class="mb-2 mt-3 form-control-label" for="">Category</label>
+                                <select class="me-2 form-control" name="tx_category" id="categories">
+                                    {% for cat in income_categories %}
+                                      <option value="{{ cat.name }}">{{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                              {{ income_form.inc_txn_submit_transaction(class='btn btn-primary mt-3') }}
+                          </form>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+
+                <!-- Remove Transaction Button trigger modal -->
+                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#remove_income_transaction_modal" style="width: 45%; background-color: #ebedef">
+                  Remove
+                </button>
+
+                <!-- Remove Transaction Modal -->
+                <div class="modal fade" id="remove_income_transaction_modal" tabindex="-1" aria-labelledby="remove_income_transaction_modal_label" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="remove_income_transaction_modal_label">Remove Income Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <form class="d-flex" action="" method="POST">
+                                <select class="me-2 form-control" name="RemoveIncomeTransaction" id="categories">
+                                  {% for txn in income_table_data %}
+                                      <option value="{{ txn.trans_id }}">{{ txn.trans_id }}: {{ txn.description }}</option>
+                                  {% endfor %}
+                                </select>
+                                <button type="submit" value="RemoveIncomeTransaction" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
+                            </form>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

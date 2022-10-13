@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content--section container">
+        <div class="container-lg mb-4 pt-1 pb-3 mt-5 main-content">
+            <header class="mb-3 fs-3 border-1 border-bottom">Login</header>
+            <div class="row justify-content-around">
+                <div class="col-12">
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+            <!--            username-->
+                        <div class="mb-3">
+                            {{ form.username.label(class='form-control-label pb-1') }}
+                            {{ form.username(class='form-control form-control-lg') }}
+                        </div>
+            <!--            password-->
+                        <div class="mb-3">
+                            {{ form.password.label(class='form-control-label pb-1') }}
+                            {{ form.password(class='form-control form-control-lg') }}
+                        </div>
+                        <div class="form-check mb-3">
+                            {{ form.remember(class="form-check-input") }}
+                            {{ form.remember.label(class="form-check-label") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.submit(class='btn btn-info') }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="container-lg pt-2 ps-0 pe-0 border-2 border-top" style="width: 40vw">
+            <small class="text-muted">
+                Don't have an account? <a class="ml-2" href="{{ url_for("register") }}">Register</a>
+            </small>
+        </div>
+    </div>
+{% endblock content %}

@@ -29,21 +29,6 @@ def home():
     return render_template(".///index.html", title=title)
 
 
-@app.route("/register", methods=['POST', 'GET'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
-    form = RegisterForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
-        flash(f'Account created for {form.username.data}!, you are now able to login!', 'success')
-        return redirect(url_for('login'))
-    return render_template("./register.html", title="Register", form=form)
-
-
 @app.route("/login", methods=['POST', 'GET'])
 def login():
     if current_user.is_authenticated:
@@ -66,9 +51,19 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route("/about")
-def about():
-    return render_template("./about.html", title='About')
+@app.route("/register", methods=['POST', 'GET'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RegisterForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Account created for {form.username.data}!, you are now able to login!', 'success')
+        return redirect(url_for('login'))
+    return render_template("./register.html", title="Register", form=form)
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
@@ -82,8 +77,10 @@ def dashboard():
     add_income_category_form = AddIncomeCategoryForm()
     expense_categories = [category for category in ExpenseCategories.query.filter_by(user_id=current_user.id)]
     income_categories = [category for category in IncomeCategories.query.filter_by(user_id=current_user.id)]
-    expense_transaction_total = sum([i.amount for i in ExpenseTransactions.query.filter_by(user_id=current_user.id).all()])
-    income_transaction_total = sum([i.amount for i in IncomeTransactions.query.filter_by(user_id=current_user.id).all()])
+    expense_transaction_total = sum(
+        [i.amount for i in ExpenseTransactions.query.filter_by(user_id=current_user.id).all()])
+    income_transaction_total = sum(
+        [i.amount for i in IncomeTransactions.query.filter_by(user_id=current_user.id).all()])
     expense_total = sum([amount.planned_amount for amount in expense_categories])
     income_total = sum([amount.planned_amount for amount in income_categories])
     if current_user.is_authenticated:
@@ -110,11 +107,11 @@ def dashboard():
                 return redirect(url_for('dashboard'))
             # Removing Expense Category
             elif "RemoveExpense" in request.form.to_dict():
-                data = request.form.to_dict()
                 try:
-                    ExpenseCategories.query.filter_by(user_id=current_user.id, name=data['RemoveExpense']).delete()
+                    user = db.session.query(ExpenseCategories).filter(ExpenseCategories.user_id == current_user.id).first()
+                    db.session.delete(user)
                     db.session.commit()
-                    flash('Expense Removed', 'success')
+                    flash('Expense Category Removed', 'success')
                 except Err as e:
                     print(f'SQLAlchemy Error: {e}')
                     return redirect(url_for('dashboard'))
@@ -129,19 +126,25 @@ def dashboard():
                 return redirect(url_for('dashboard'))
             # Removing Income Category
             elif "RemoveIncome" in request.form.to_dict():
-                data = request.form.to_dict()
                 try:
-                    IncomeCategories.query.filter_by(user_id=current_user.id, name=data['RemoveIncome']).delete()
+                    user = db.session.query(IncomeCategories).filter(IncomeCategories.user_id == current_user.id).first()
+                    db.session.delete(user)
                     db.session.commit()
                     flash('Income Category Removed!', 'success')
                 except Err as e:
                     print(f'SQLAlchemy Error: {e}')
                     return redirect(url_for('dashboard'))
                 return redirect(url_for('dashboard'))
-            # Error Page
             else:
-                print(request.form.to_dict())
-                return "<h1>Error</h1>"
+                return render_template('./dashboard.html', title='Dashboard', balance_form=balance_form,
+                                       add_expense_category_form=add_expense_category_form,
+                                       add_income_category_form=add_income_category_form,
+                                       expense_categories=expense_categories, income_categories=income_categories,
+                                       expense_total=expense_total, income_total=income_total,
+                                       starting_balance=starting_balance, exp_category_totals=exp_category_totals,
+                                       expense_transaction_total=expense_transaction_total,
+                                       income_transaction_total=income_transaction_total,
+                                       inc_category_totals=inc_category_totals)
         # GET Request
         else:
             return render_template('./dashboard.html', title='Dashboard', balance_form=balance_form,
@@ -170,10 +173,14 @@ def transactions():
             # Adding Expense Transaction
             if expense_form.validate_on_submit() and expense_form.exp_txn_description.data:
                 try:
-                    stmt = ExpenseTransactions(user_id=current_user.id,
-                                               amount=expense_form.exp_txn_amount.data,
-                                               description=expense_form.exp_txn_description.data,
-                                               category=form2['tx_category'])
+                    if len(form2.keys()) == 5:
+                        stmt = ExpenseTransactions(user_id=current_user.id,
+                                                   amount=expense_form.exp_txn_amount.data,
+                                                   description=expense_form.exp_txn_description.data,
+                                                   category=form2['tx_category'])
+                    else:
+                        flash('Please Enter a Category!', 'danger')
+                        return redirect(url_for('transactions'))
                     db.session.add(stmt)
                     db.session.commit()
                     flash('New Expense Transaction Added!', 'success')
@@ -227,3 +234,8 @@ def transactions():
                                    expense_categories=expense_categories,
                                    income_categories=income_categories, expense_table_data=expense_table_data,
                                    income_table_data=income_table_data)
+
+
+@app.route("/about")
+def about():
+    return render_template("./about.html", title='About')

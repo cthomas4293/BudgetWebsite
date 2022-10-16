@@ -28,7 +28,8 @@ class ExpenseCategories(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(20), nullable=False)
     planned_amount = db.Column(db.Integer, nullable=False)
-    expense_transactions = db.relationship('ExpenseTransactions', backref='exp_category_name', lazy=True)
+    expense_transactions = db.relationship('ExpenseTransactions', cascade='all, delete', backref='exp_category_name',
+                                           lazy=True)
 
     def __repr__(self):
         return f"Expense Category('{self.name}', '{self.planned_amount}')"
@@ -39,7 +40,7 @@ class IncomeCategories(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(20), nullable=False)
     planned_amount = db.Column(db.Integer, nullable=False)
-    income_transactions = db.relationship('IncomeTransactions', backref='inc_category_name', lazy=True)
+    income_transactions = db.relationship('IncomeTransactions', cascade='all, delete', backref='inc_category_name', lazy=True)
 
     def __repr__(self):
         return f"Income Category('{self.name}', '{self.planned_amount}')"

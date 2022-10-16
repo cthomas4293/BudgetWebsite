@@ -6,7 +6,6 @@
             <p class="fs-3 pb-3 header--orange border-bottom border-dark border-opacity-25">Expense</p>
             <table class="table">
                 <tr class="">
-                    <th class="text-center">ID</th>
                     <th class="text-center">Date</th>
                     <th class="text-center">Amount</th>
                     <th class="text-center">Description</th>
@@ -14,7 +13,6 @@
                 </tr>
                 {% for row in expense_table_data %}
                     <tr class="">
-                        <td class="text-center">{{ row.trans_id }}</td>
                         <td class="text-center">{{ row.date[0:11] }}</td> {# todo date is using current date instead of date inputed #}
                         <td class="text-center">${{ row.amount }}</td>
                         <td class="text-center">{{ row.description }}</td>
@@ -91,7 +89,7 @@
                           <form class="d-flex" action="" method="POST">
                                 <select class="me-2 form-control" name="RemoveExpenseTransaction" id="categories">
                                   {% for txn in expense_table_data %}
-                                      <option value="{{ txn.trans_id }}">{{ txn.trans_id }}: {{ txn.description }}</option>
+                                      <option value="{{ txn.trans_id }}">{{ txn.description }}: ${{ txn.amount }}</option>
                                   {% endfor %}
                                 </select>
                                 <button type="submit" value="RemoveExpenseTransaction" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
@@ -111,7 +109,6 @@
             <p class="fs-3 pb-3 header--orange border-bottom border-dark border-opacity-25">Income</p>
             <table class="table">
                 <tr class="">
-                    <th class="text-center">ID</th>
                     <th class="text-center">Date</th>
                     <th class="text-center">Amount</th>
                     <th class="text-center">Description</th>
@@ -119,7 +116,6 @@
                 </tr>
                 {% for row in income_table_data %}
                     <tr class="">
-                        <td class="text-center">{{ row.trans_id }}</td>
                         <td class="text-center">{{ row.date[0:11] }}</td> {# todo date is using current date instead of date inputed #}
                         <td class="text-center">${{ row.amount }}</td>
                         <td class="text-center">{{ row.description }}</td>
@@ -196,7 +192,7 @@
                           <form class="d-flex" action="" method="POST">
                                 <select class="me-2 form-control" name="RemoveIncomeTransaction" id="categories">
                                   {% for txn in income_table_data %}
-                                      <option value="{{ txn.trans_id }}">{{ txn.trans_id }}: {{ txn.description }}</option>
+                                      <option value="{{ txn.trans_id }}">{{ txn.description }}: ${{ txn.amount }}</option>
                                   {% endfor %}
                                 </select>
                                 <button type="submit" value="RemoveIncomeTransaction" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>

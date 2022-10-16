@@ -199,13 +199,17 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            <form class="d-flex" action="" method="POST">
-                                <label for="categories"></label><select class="me-2 form-control" name="RemoveExpense" id="categories">
-                                  {% for cat in expense_categories %}
-                                      <option value="{{ cat.name }}">{{ cat.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <button type="submit" value="RemoveIncome" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
+                            <form class="d-flex flex-column" action="" method="POST">
+                                <div class="d-flex">
+                                    <label for="categories"></label>
+                                    <select class="me-2 form-control" name="RemoveExpense" id="categories">
+                                      {% for cat in expense_categories %}
+                                          <option value="{{ cat.name }}">{{ cat.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" value="RemoveExpense" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
+                                </div>
+                                <span class="text-danger mt-2 fw-lighter">Note: Deleting a category here will delete all linked transactions.</span>
                             </form>
                           </div>
                         </div>
@@ -230,7 +234,7 @@
                         <th class="fw-light fst-italic">${{ income_transaction_total }}</th>
                         {% if -1 * (income_total - income_transaction_total) < income_total %}
                             <th class="fw-light fst-italic text-danger">
-                                -${{ -1 * (income_total - income_transaction_total) }}
+                                -${{ (income_total - income_transaction_total) }}
                             </th>
                             {% elif (income_total - income_transaction_total) == 0 %}
                                 <th class="fw-light fst-italic">
@@ -247,10 +251,14 @@
                             <td>{{ row.name }}</td>
                             <td>${{ row.planned_amount }}</td>
                             <td>${{ inc_category_totals[row.name] }}</td>
-                            {% if -1 * (row.planned_amount - inc_category_totals[row.name]) <= row.planned_amount %}
+                            {% if -1 * (row.planned_amount - inc_category_totals[row.name]) < row.planned_amount %}
                                 <td class="text-danger">
-                                    -${{ -1 * (row.planned_amount - inc_category_totals[row.name]) }}
+                                    -${{ (row.planned_amount - inc_category_totals[row.name]) }}
                                 </td>
+                                {% elif (row.planned_amount - inc_category_totals[row.name]) == 0 %}
+                                    <td>
+                                        ${{ (row.planned_amount - inc_category_totals[row.name]) }}
+                                    </td>
                                 {% else %}
                                     <td class="text-success">
                                         +${{ -1 * (row.planned_amount - inc_category_totals[row.name]) }}
@@ -326,13 +334,16 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            <form class="d-flex" action="" method="POST">
-                                <select class="me-2 form-control" name="RemoveIncome" id="categories">
-                                  {% for cat in income_categories %}
-                                      <option value="{{ cat.name }}">{{ cat.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <button type="submit" value="RemoveIncome" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
+                            <form class="d-flex flex-column" action="" method="POST">
+                                <div class="d-flex">
+                                    <select class="me-2 form-control" name="RemoveIncome" id="categories">
+                                      {% for cat in income_categories %}
+                                          <option value="{{ cat.name }}">{{ cat.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" value="RemoveIncome" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>
+                                </div>
+                                <span class="text-danger mt-2 fw-lighter">Note: Deleting a category here will delete all linked transactions.</span>
                             </form>
                           </div>
                         </div>

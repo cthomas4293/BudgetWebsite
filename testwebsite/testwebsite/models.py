@@ -45,28 +45,30 @@ class IncomeCategories(db.Model):
         return f"Income Category('{self.name}', '{self.planned_amount}')"
 
 
-class IncomeTransactions(db.Model):
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    trans_id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(20), db.ForeignKey('income_categories.name'), nullable=False)
-    date = db.Column(db.Integer, nullable=False, default=datetime.utcnow())
-    amount = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.String(120), nullable=False)
-
-    def __repr__(self):
-        return f"Income Transactions('{self.category}', '{self.date}', '{self.amount}', '{self.description}')"
-
-
 class ExpenseTransactions(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     trans_id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(20), db.ForeignKey('expense_categories.name'), nullable=False)
+    category = db.Column(db.String(20), db.ForeignKey('expense_categories.name'), nullable=False,
+                         default='Miscellaneous')
     date = db.Column(db.Integer, nullable=False, default=datetime.utcnow())
     amount = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(120), nullable=False)
 
     def __repr__(self):
         return f"Expense Transactions('{self.category}', '{self.date}', '{self.amount}', '{self.description}')"
+
+
+class IncomeTransactions(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    trans_id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(20), db.ForeignKey('income_categories.name'), nullable=False,
+                         default='Miscellaneous')
+    date = db.Column(db.Integer, nullable=False, default=datetime.utcnow())
+    amount = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(120), nullable=False)
+
+    def __repr__(self):
+        return f"Income Transactions('{self.category}', '{self.date}', '{self.amount}', '{self.description}')"
 
 
 class StartingBalance(db.Model):

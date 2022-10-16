@@ -8,6 +8,20 @@ from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.exc import SQLAlchemyError as Err
 
 
+def show_categories(key):
+    totals = {}
+    query2 = [ExpenseCategories.query.filter_by(user_id=current_user.id).all() if key == 'expense' else
+              IncomeCategories.query.filter_by(user_id=current_user.id).all()]
+    query = [ExpenseTransactions.query.filter_by(user_id=current_user.id).all() if key == 'expense' else
+             IncomeTransactions.query.filter_by(user_id=current_user.id).all()]
+    for category_name in query2[0]:
+        totals[category_name.name] = 0
+        for instance in query[0]:
+            if instance.category == category_name.name:
+                totals[category_name.name] += instance.amount
+    return totals
+
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -60,15 +74,16 @@ def about():
 @app.route("/dashboard", methods=["POST", "GET"])
 @login_required
 def dashboard():
+    exp_category_totals = show_categories('expense')
+    inc_category_totals = show_categories('income')
     balance_form = BalanceForm()
     add_expense_category_form = AddExpenseCategoryForm()
-    exp_txn = ExpenseTransactions.query.filter_by(user_id=current_user.id).all()
-    cats = set([i.category for i in exp_txn])
-    print(exp_txn)
     starting_balance = StartingBalance.query.filter_by(user_id=current_user.id).all()
     add_income_category_form = AddIncomeCategoryForm()
     expense_categories = [category for category in ExpenseCategories.query.filter_by(user_id=current_user.id)]
     income_categories = [category for category in IncomeCategories.query.filter_by(user_id=current_user.id)]
+    expense_transaction_total = sum([i.amount for i in ExpenseTransactions.query.filter_by(user_id=current_user.id).all()])
+    income_transaction_total = sum([i.amount for i in IncomeTransactions.query.filter_by(user_id=current_user.id).all()])
     expense_total = sum([amount.planned_amount for amount in expense_categories])
     income_total = sum([amount.planned_amount for amount in income_categories])
     if current_user.is_authenticated:
@@ -99,6 +114,7 @@ def dashboard():
                 try:
                     ExpenseCategories.query.filter_by(user_id=current_user.id, name=data['RemoveExpense']).delete()
                     db.session.commit()
+                    flash('Expense Removed', 'success')
                 except Err as e:
                     print(f'SQLAlchemy Error: {e}')
                     return redirect(url_for('dashboard'))
@@ -117,6 +133,7 @@ def dashboard():
                 try:
                     IncomeCategories.query.filter_by(user_id=current_user.id, name=data['RemoveIncome']).delete()
                     db.session.commit()
+                    flash('Income Category Removed!', 'success')
                 except Err as e:
                     print(f'SQLAlchemy Error: {e}')
                     return redirect(url_for('dashboard'))
@@ -132,7 +149,10 @@ def dashboard():
                                    add_income_category_form=add_income_category_form,
                                    expense_categories=expense_categories, income_categories=income_categories,
                                    expense_total=expense_total, income_total=income_total,
-                                   starting_balance=starting_balance, exp_txn=exp_txn, cats=cats)
+                                   starting_balance=starting_balance, exp_category_totals=exp_category_totals,
+                                   expense_transaction_total=expense_transaction_total,
+                                   income_transaction_total=income_transaction_total,
+                                   inc_category_totals=inc_category_totals)
 
 
 @app.route("/transactions", methods=['POST', 'GET'])

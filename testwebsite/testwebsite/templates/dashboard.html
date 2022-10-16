@@ -84,8 +84,10 @@
                 <canvas id="incomeChart" height="70%"></canvas>
             </div>
         </div>
+
 {#       Dashboard Forms #}
         <div class="row justify-content-between mt-5">
+        {# Expense Data Area #}
             <div class="col ps-5 pe-5 mb-5">
                 <p class="fs-3 header--orange">Expense</p>
                 <table class="table dashboard--table float-end">
@@ -98,15 +100,35 @@
                     <tr>
                         <th class="total--header fw-light">Totals</th>
                         <th class="fw-light fst-italic">${{ expense_total }}</th>
-                        <th class="fw-light fst-italic">$0.00</th>
-                        <th class="fw-light fst-italic">-$0.00</th>
+                        <th class="fw-light fst-italic">${{ expense_transaction_total }}</th>
+                        {% if expense_total - expense_transaction_total < 0 %}
+                            <th class="fw-light fst-italic text-danger">
+                                -${{ -1 * (expense_total - expense_transaction_total) }}
+                            </th>
+                            {% elif expense_total - expense_transaction_total == 0 %}
+                                <th class="fw-light fst-italic">
+                                    ${{ (expense_total - expense_transaction_total) }}
+                                </th>
+                            {% else %}
+                            <th class="fw-light fst-italic text-success">
+                                ${{ (expense_total - expense_transaction_total) }}
+                            </th>
+                        {% endif %}
                     </tr>
                     {% for row in expense_categories %}
                         <tr>
                             <td>{{ row.name }}</td>
                             <td>${{ row.planned_amount }}</td>
-                            <td>${{ cats }}</td>
-                            <td>$0.00</td>
+                            <td>${{ exp_category_totals[row.name] }}</td>
+                            {% if row.planned_amount - exp_category_totals[row.name] < 0 %}
+                                <td class="text-danger">
+                                    -${{ -1 * (row.planned_amount - exp_category_totals[row.name]) }}
+                                </td>
+                                {% else %}
+                                    <td class="text-success">
+                                        +${{ row.planned_amount - exp_category_totals[row.name] }}
+                                    </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
@@ -178,7 +200,7 @@
                           </div>
                           <div class="modal-body">
                             <form class="d-flex" action="" method="POST">
-                                <select class="me-2 form-control" name="RemoveExpense" id="categories">
+                                <label for="categories"></label><select class="me-2 form-control" name="RemoveExpense" id="categories">
                                   {% for cat in expense_categories %}
                                       <option value="{{ cat.name }}">{{ cat.name }}</option>
                                     {% endfor %}
@@ -191,10 +213,11 @@
                     </div>
                 </div>
             </div>
+
+        {# Income Data Area #}
             <div class="col pe-5 ps-5">
                 <p class="fs-3 header--orange">Income</p>
                 <table class="table dashboard--table float-end">
-{#                todo: automate this with for-statement#}
                     <tr>
                         <th></th>
                         <th>Planned</th>
@@ -204,15 +227,35 @@
                     <tr>
                         <th class="total--header fw-light">Totals</th>
                         <th class="fw-light fst-italic">${{ income_total }}</th>
-                        <th class="fw-light fst-italic">$0.00</th>
-                        <th class="fw-light fst-italic">-$0.00</th>
+                        <th class="fw-light fst-italic">${{ income_transaction_total }}</th>
+                        {% if -1 * (income_total - income_transaction_total) < income_total %}
+                            <th class="fw-light fst-italic text-danger">
+                                -${{ -1 * (income_total - income_transaction_total) }}
+                            </th>
+                            {% elif (income_total - income_transaction_total) == 0 %}
+                                <th class="fw-light fst-italic">
+                                    ${{ (income_total - income_transaction_total) }}
+                                </th>
+                            {% else %}
+                            <th class="fw-light fst-italic text-success">
+                                +${{ -1 * (income_total - income_transaction_total) }}
+                            </th>
+                        {% endif %}
                     </tr>
                     {% for row in income_categories %}
                         <tr>
                             <td>{{ row.name }}</td>
                             <td>${{ row.planned_amount }}</td>
-                            <td>$0.00</td>
-                            <td>$0.00</td>
+                            <td>${{ inc_category_totals[row.name] }}</td>
+                            {% if -1 * (row.planned_amount - inc_category_totals[row.name]) <= row.planned_amount %}
+                                <td class="text-danger">
+                                    -${{ -1 * (row.planned_amount - inc_category_totals[row.name]) }}
+                                </td>
+                                {% else %}
+                                    <td class="text-success">
+                                        +${{ -1 * (row.planned_amount - inc_category_totals[row.name]) }}
+                                    </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
@@ -286,7 +329,7 @@
                             <form class="d-flex" action="" method="POST">
                                 <select class="me-2 form-control" name="RemoveIncome" id="categories">
                                   {% for cat in income_categories %}
-                                      <option value="{{ cat }}">{{ cat }}</option>
+                                      <option value="{{ cat.name }}">{{ cat.name }}</option>
                                     {% endfor %}
                                 </select>
                                 <button type="submit" value="RemoveIncome" class="btn btn-primary pe-3" data-bs-dismiss="modal">Remove</button>

@@ -13,7 +13,7 @@
                 </tr>
                 {% for row in expense_table_data %}
                     <tr class="">
-                        <td class="text-center">{{ row.date[0:11] }}</td> {# todo date is using current date instead of date inputed #}
+                        <td class="text-center">{{ row.date[0:11] }}</td>
                         <td class="text-center">${{ row.amount }}</td>
                         <td class="text-center">{{ row.description }}</td>
                         <td class="text-center">{{ row.category }}</td>
@@ -116,7 +116,7 @@
                 </tr>
                 {% for row in income_table_data %}
                     <tr class="">
-                        <td class="text-center">{{ row.date[0:11] }}</td> {# todo date is using current date instead of date inputed #}
+                        <td class="text-center">{{ row.date[0:11] }}</td>
                         <td class="text-center">${{ row.amount }}</td>
                         <td class="text-center">{{ row.description }}</td>
                         <td class="text-center">{{ row.category }}</td>

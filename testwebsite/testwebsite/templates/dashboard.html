@@ -58,10 +58,14 @@
 {#            Savings Analytics #}
             <div class="col-5 mt-5 p-2 d-flex flex-column align-items-center" style="background-color: #ebedef">
                 <div class="pb-2 d-flex justify-content-center flex-column text-center" style="width: 65%">
-                    {% if (starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total > 0 %}
-                        <p class="mt-3 fs-2 m-0 text-success">+${{ (starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total }}</p>
+                    {% if starting_balance %}
+                        {% if (starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total > 0 %}
+                            <p class="mt-3 fs-2 m-0 text-success">+${{ (starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total }}</p>
+                            {% else %}
+                                <p class="mt-3 fs-2 m-0 text-danger">-${{ -1 * ((starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total) }}</p>
+                        {% endif %}
                         {% else %}
-                            <p class="mt-3 fs-2 m-0 text-danger">-${{ -1 * ((starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total) }}</p>
+                            <p class="mt-3 fs-2 m-0 text-success">$0</p>
                     {% endif %}
                     <p class="fs-6 m-0 pb-3" style="border-bottom: 1px dashed darkgray">Increase in Total Savings</p>
                 </div>

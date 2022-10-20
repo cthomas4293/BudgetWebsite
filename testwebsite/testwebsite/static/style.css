@@ -33,6 +33,14 @@
     background-color: #fcece6;
 }
 
+.dashboard--table tr {
+    text-align: center;
+}
+
+.dashboard--table tr td {
+    text-align: center;
+}
+
 /*.dashboard--table tr th:first-child {*/
     /*width: 40%;*/
 /*}*/

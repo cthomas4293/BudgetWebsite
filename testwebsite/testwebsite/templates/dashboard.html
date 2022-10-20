@@ -260,7 +260,7 @@
                     </tr>
                     <tr>
                         <th class="total--header fw-light">Due Date</th>
-                        <th class="total--header fw-light">Totals</th>
+                        <th class="total--header fw-light">Category</th>
                         <th class="fw-light fst-italic">${{ income_total }}</th>
                         <th class="fw-light fst-italic">${{ income_transaction_total }}</th>
                         {% if -1 * (income_total - income_transaction_total) < income_total %}
@@ -279,6 +279,7 @@
                     </tr>
                     {% for row in income_categories %}
                         <tr>
+                            <td>{{ row.date }}</td>
                             <td>{{ row.name }}</td>
                             <td>${{ row.planned_amount }}</td>
                             <td>${{ inc_category_totals[row.name] }}</td>
@@ -314,6 +315,21 @@
                           <div class="modal-body">
                             <form action="" method="POST">
                                 {{ add_income_category_form.hidden_tag() }}
+                                {#  date  #}
+                                <div class="mb-3">
+                                    {{ add_income_category_form.income_date.label(class='form-control-label mb-2') }}
+                                    {% if add_income_category_form.errors %}
+                                        {{ add_income_category_form.expense_date(class='form-control is-invalid') }}
+                                        <div class="invalid-feedback">
+                                            {% for error in add_income_category_form.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% else %}
+                                        {{ add_income_category_form.income_date(class='form-control') }}
+                                    {% endif %}
+                                </div>
+
                                 {#  name  #}
                                 <div class="mb-3">
                                     {{ add_income_category_form.income_name.label(class='form-control-label mb-2') }}

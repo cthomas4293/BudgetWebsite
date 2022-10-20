@@ -119,7 +119,6 @@ def dashboard():
                     return redirect(url_for('dashboard'))
             # Adding Expense Category
             elif add_expense_category_form.validate_on_submit() and add_expense_category_form.expense_name.data:
-                # print(add_expense_category_form.data['expense_date'])
                 category = ExpenseCategories(date=add_expense_category_form.data['expense_date'],
                                              user_id=current_user.id,
                                              name=add_expense_category_form.expense_name.data,
@@ -144,7 +143,7 @@ def dashboard():
                 return redirect(url_for('dashboard'))
             # Adding Income Category
             elif add_income_category_form.validate_on_submit() and add_income_category_form.income_name.data:
-                category = IncomeCategories(date=add_income_category_form,
+                category = IncomeCategories(date=add_income_category_form.data['income_date'],
                                             user_id=current_user.id,
                                             name=add_income_category_form.income_name.data,
                                             planned_amount=add_income_category_form.income_planned.data)

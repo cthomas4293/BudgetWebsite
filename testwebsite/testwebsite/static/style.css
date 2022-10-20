@@ -25,17 +25,17 @@
     color: #f46524;
 }
 
-.dashboard--table tr th:not(:nth-child(1)), .dashboard--table tr td:not(:nth-child(1)) {
-    text-align: right;
-}
+/*.dashboard--table tr th:not(:nth-child(1)), .dashboard--table tr td:not(:nth-child(1)) {*/
+/*    text-align: right;*/
+/*}*/
 
 .dashboard--table tr td:nth-child(1), .dashboard--table tr td:nth-child(2){
     background-color: #fcece6;
 }
 
-.dashboard--table tr th:first-child {
-    width: 40%;
-}
+/*.dashboard--table tr th:first-child {*/
+    /*width: 40%;*/
+/*}*/
 
 .total--header {
     font-size: 0.80em;

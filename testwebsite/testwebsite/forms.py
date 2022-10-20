@@ -39,24 +39,26 @@ class BalanceForm(FlaskForm):
 class AddExpenseTransactionForm(FlaskForm):
     exp_txn_date = DateField('Date', validators=[DataRequired()], default=datetime.utcnow())
     exp_txn_amount = IntegerField('Amount', validators=[InputRequired()])
-    exp_txn_description = StringField('Description', validators=[InputRequired()])
+    exp_txn_description = StringField('Description', validators=[InputRequired(), Length(min=2, max=30)])
     exp_txn_submit_transaction = SubmitField('Submit')
 
 
 class AddIncomeTransactionForm(FlaskForm):
     inc_txn_date = DateField('Date', validators=[DataRequired()], default=datetime.utcnow())
     inc_txn_amount = IntegerField('Amount', validators=[InputRequired()])
-    inc_txn_description = StringField('Description', validators=[InputRequired()])
+    inc_txn_description = StringField('Description', validators=[InputRequired(), Length(min=2, max=30)])
     inc_txn_submit_transaction = SubmitField('Submit')
 
 
 class AddExpenseCategoryForm(FlaskForm):
-    expense_name = StringField("Category", validators=[InputRequired(), Length(min=2, max=10)])
+    expense_date = DateField('Date')
+    expense_name = StringField("Category", validators=[InputRequired(), Length(min=2, max=30)])
     expense_planned = IntegerField("Planned", validators=[InputRequired()])
     expense_submit = SubmitField('Save')
 
 
 class AddIncomeCategoryForm(FlaskForm):
-    income_name = StringField("Category", validators=[InputRequired(), Length(min=2, max=10)])
+    income_date = DateField('Date')
+    income_name = StringField("Category", validators=[InputRequired(), Length(min=2, max=30)])
     income_planned = IntegerField("Planned", validators=[InputRequired()])
     income_submit = SubmitField('Save')

@@ -25,6 +25,7 @@ class User(db.Model, UserMixin):
 
 class ExpenseCategories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(20), nullable=False)
     planned_amount = db.Column(db.Integer, nullable=False)
@@ -37,6 +38,7 @@ class ExpenseCategories(db.Model):
 
 class IncomeCategories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(20), nullable=False)
     planned_amount = db.Column(db.Integer, nullable=False)

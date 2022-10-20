@@ -6,6 +6,26 @@ from testwebsite.models import User, ExpenseCategories, IncomeCategories, Starti
 from testwebsite import app, bcrypt, db
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.exc import SQLAlchemyError as Err
+from datetime import date
+import calendar
+
+today = date.today()
+end_of_month = calendar.monthrange(date.today().year, date.today().month)[1]
+
+
+# resets all transactions for all users once the end of the month comes
+# todo throws error:SAWarning: Multiple rows returned with uselist=False for lazily-loaded attribute
+#  'ExpenseTransactions.exp_category_name'
+def reset_transactions(today_date, eom):
+    if today_date == eom:
+        stmt = db.session.query(User).all()
+        for user in stmt:
+            exp_tx = db.session.query(ExpenseTransactions). \
+                filter(ExpenseTransactions.user_id == user.id).all()
+            for tx in exp_tx:
+                db.session.delete(tx)
+                db.session.commit()
+        return "Transactions Reset"
 
 
 def show_categories(key):
@@ -85,6 +105,7 @@ def dashboard():
     income_total = sum([amount.planned_amount for amount in income_categories])
     if current_user.is_authenticated:
         if request.method == "POST":
+            data = request.form.to_dict()
             # Updating Starting Balance
             if balance_form.validate_on_submit() and balance_form.starting_balance.data:
                 try:
@@ -98,7 +119,9 @@ def dashboard():
                     return redirect(url_for('dashboard'))
             # Adding Expense Category
             elif add_expense_category_form.validate_on_submit() and add_expense_category_form.expense_name.data:
-                category = ExpenseCategories(user_id=current_user.id,
+                # print(add_expense_category_form.data['expense_date'])
+                category = ExpenseCategories(date=add_expense_category_form.data['expense_date'],
+                                             user_id=current_user.id,
                                              name=add_expense_category_form.expense_name.data,
                                              planned_amount=add_expense_category_form.expense_planned.data)
                 db.session.add(category)
@@ -108,7 +131,10 @@ def dashboard():
             # Removing Expense Category
             elif "RemoveExpense" in request.form.to_dict():
                 try:
-                    user = db.session.query(ExpenseCategories).filter(ExpenseCategories.user_id == current_user.id).first()
+                    user = db.session.query(ExpenseCategories). \
+                        filter(ExpenseCategories.user_id == current_user.id). \
+                        filter(ExpenseCategories.name == data["RemoveExpense"]). \
+                        first()
                     db.session.delete(user)
                     db.session.commit()
                     flash('Expense Category Removed', 'success')
@@ -118,7 +144,9 @@ def dashboard():
                 return redirect(url_for('dashboard'))
             # Adding Income Category
             elif add_income_category_form.validate_on_submit() and add_income_category_form.income_name.data:
-                category = IncomeCategories(user_id=current_user.id, name=add_income_category_form.income_name.data,
+                category = IncomeCategories(date=add_income_category_form,
+                                            user_id=current_user.id,
+                                            name=add_income_category_form.income_name.data,
                                             planned_amount=add_income_category_form.income_planned.data)
                 db.session.add(category)
                 db.session.commit()
@@ -127,7 +155,10 @@ def dashboard():
             # Removing Income Category
             elif "RemoveIncome" in request.form.to_dict():
                 try:
-                    user = db.session.query(IncomeCategories).filter(IncomeCategories.user_id == current_user.id).first()
+                    user = db.session.query(IncomeCategories). \
+                        filter(IncomeCategories.user_id == current_user.id). \
+                        filter(IncomeCategories.name == data["RemoveIncome"]). \
+                        first()
                     db.session.delete(user)
                     db.session.commit()
                     flash('Income Category Removed!', 'success')

@@ -37,7 +37,22 @@
                       <div class="modal-body">
                           <form action="" method="POST">
                               {{ expense_form.hidden_tag() }}
-                              {{ expense_form.exp_txn_amount.label(class='form-control-label mb-2') }}
+
+                              {# Date #}
+                              {{ expense_form.exp_txn_date.label(class='form-control-label mb-2') }}
+                              {% if expense_form.exp_txn_date.errors %}
+                                  {{ expense_form.exp_txn_date(class='form-control is-invalid') }}
+                                  <div class="invalid-feedback">
+                                    {% for error in expense_form.exp_txn_date.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                  </div>
+                                  {% else %}
+                                  {{ expense_form.exp_txn_date(class='form-control') }}
+                              {% endif %}
+
+                              {# Amount #}
+                              {{ expense_form.exp_txn_amount.label(class='form-control-label mb-2 mt-3') }}
                               {% if expense_form.exp_txn_amount.errors %}
                                   {{ expense_form.exp_txn_amount(class='form-control is-invalid') }}
                                   <div class="invalid-feedback">
@@ -48,6 +63,8 @@
                                   {% else %}
                                   {{ expense_form.exp_txn_amount(class='form-control') }}
                               {% endif %}
+
+                              {# Description #}
                               {{ expense_form.exp_txn_description.label(class='form-control-label mb-2 mt-3') }}
                               {% if expense_form.exp_txn_description.errors %}
                                   {{ expense_form.exp_txn_description(class='form-control is-invalid') }}
@@ -59,6 +76,8 @@
                                   {% else %}
                                   {{ expense_form.exp_txn_description(class='form-control') }}
                               {% endif %}
+
+                              {# Category #}
                               <label class="mb-2 mt-3 form-control-label" for="">Category</label>
                                 <select class="me-2 form-control" name="tx_category" id="categories">
                                     {% for cat in expense_categories %}
@@ -140,7 +159,22 @@
                       <div class="modal-body">
                           <form action="" method="POST">
                               {{ income_form.hidden_tag() }}
-                              {{ income_form.inc_txn_amount.label(class='form-control-label mb-2') }}
+
+                              {# Date #}
+                              {{ income_form.inc_txn_date.label(class='form-control-label mb-2') }}
+                              {% if income_form.inc_txn_date.errors %}
+                                  {{ income_form.inc_txn_date(class='form-control is-invalid') }}
+                                  <div class="invalid-feedback">
+                                    {% for error in income_form.inc_txn_date.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                  </div>
+                                  {% else %}
+                                  {{ income_form.inc_txn_date(class='form-control') }}
+                              {% endif %}
+
+                              {# Amount #}
+                              {{ income_form.inc_txn_amount.label(class='form-control-label mb-2 mt-3') }}
                               {% if income_form.inc_txn_amount.errors %}
                                   {{ income_form.inc_txn_amount(class='form-control is-invalid') }}
                                   <div class="invalid-feedback">
@@ -151,6 +185,8 @@
                                   {% else %}
                                   {{ income_form.inc_txn_amount(class='form-control') }}
                               {% endif %}
+
+                              {# Description #}
                               {{ income_form.inc_txn_description.label(class='form-control-label mb-2 mt-3') }}
                               {% if income_form.inc_txn_description.errors %}
                                   {{ income_form.inc_txn_description(class='form-control is-invalid') }}
@@ -162,6 +198,8 @@
                                   {% else %}
                                   {{ income_form.inc_txn_description(class='form-control') }}
                               {% endif %}
+
+                              {# Category #}
                               <label class="mb-2 mt-3 form-control-label" for="">Category</label>
                                 <select class="me-2 form-control" name="tx_category" id="categories">
                                     {% for cat in income_categories %}

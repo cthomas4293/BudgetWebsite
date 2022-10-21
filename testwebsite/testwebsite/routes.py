@@ -203,8 +203,9 @@ def transactions():
             # Adding Expense Transaction
             if expense_form.validate_on_submit() and expense_form.exp_txn_description.data:
                 try:
-                    if len(form2.keys()) == 5:
+                    if len(form2.keys()) == 6:
                         stmt = ExpenseTransactions(user_id=current_user.id,
+                                                   date=expense_form.data['exp_txn_date'],
                                                    amount=expense_form.exp_txn_amount.data,
                                                    description=expense_form.exp_txn_description.data,
                                                    category=form2['tx_category'])
@@ -233,6 +234,7 @@ def transactions():
             if income_form.validate_on_submit() and income_form.inc_txn_description.data:
                 try:
                     stmt = IncomeTransactions(user_id=current_user.id,
+                                              date=income_form.data['inc_txn_date'],
                                               amount=income_form.inc_txn_amount.data,
                                               description=income_form.inc_txn_description.data,
                                               category=request.form.to_dict()['tx_category'])

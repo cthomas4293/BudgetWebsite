@@ -250,15 +250,17 @@
         {# Income Data Area #}
             <div class="col pe-5 ps-5">
                 <p class="fs-3 header--orange">Income</p>
-                <table class="table dashboard--table float-end">
+                <table class="table income--table dashboard--table float-end">
                     <tr>
+                        <th></th>
                         <th></th>
                         <th>Planned</th>
                         <th>Actual</th>
                         <th>Diff</th>
                     </tr>
                     <tr>
-                        <th class="total--header fw-light">Total</th>
+                        <th class="total--header fw-light text-start">Totals</th>
+                        <th></th>
                         <th class="fw-light fst-italic">${{ income_total }}</th>
                         <th class="fw-light fst-italic">${{ income_transaction_total }}</th>
                         {% if -1 * (income_total - income_transaction_total) < income_total %}
@@ -277,7 +279,7 @@
                     </tr>
                     {% for row in income_categories %}
                         <tr>
-                            <td>{{ row.date }}</td>
+                            <td></td>
                             <td>{{ row.name }}</td>
                             <td>${{ row.planned_amount }}</td>
                             <td>${{ inc_category_totals[row.name] }}</td>

@@ -61,7 +61,7 @@ def login():
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
-            flash(f"Incorrect Login Credentials, Please Try Again!", 'danger')
+            flash("Incorrect Login Credentials, Please Try Again!", 'danger')
     return render_template("./login.html", title='Login', form=form)
 
 
@@ -143,10 +143,10 @@ def dashboard():
                 return redirect(url_for('dashboard'))
             # Adding Income Category
             elif add_income_category_form.validate_on_submit() and add_income_category_form.income_name.data:
-                category = IncomeCategories(date=add_income_category_form.data['income_date'],
-                                            user_id=current_user.id,
+                category = IncomeCategories(user_id=current_user.id,
                                             name=add_income_category_form.income_name.data,
                                             planned_amount=add_income_category_form.income_planned.data)
+
                 db.session.add(category)
                 db.session.commit()
                 flash('New Income Category Added!', 'success')

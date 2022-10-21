@@ -58,7 +58,6 @@ class AddExpenseCategoryForm(FlaskForm):
 
 
 class AddIncomeCategoryForm(FlaskForm):
-    income_date = DateField('Date')
     income_name = StringField("Category", validators=[InputRequired(), Length(min=2, max=30)])
     income_planned = IntegerField("Planned", validators=[InputRequired()])
     income_submit = SubmitField('Save')

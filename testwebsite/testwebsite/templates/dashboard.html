@@ -263,17 +263,17 @@
                         <th></th>
                         <th class="fw-light fst-italic">${{ income_total }}</th>
                         <th class="fw-light fst-italic">${{ income_transaction_total }}</th>
-                        {% if -1 * (income_total - income_transaction_total) < income_total %}
-                            <th class="fw-light fst-italic">
-                                ${{ (income_total - income_transaction_total) }}
+                        {% if (income_total - income_transaction_total) < 0 %}
+                            <th class="fw-light fst-italic text-success">
+                                +${{ -1 * (income_total - income_transaction_total) }}
                             </th>
                             {% elif (income_total - income_transaction_total) == 0 %}
                                 <th class="fw-light fst-italic">
                                     ${{ (income_total - income_transaction_total) }}
                                 </th>
                             {% else %}
-                            <th class="fw-light fst-italic text-success">
-                                +${{ -1 * (income_total - income_transaction_total) }}
+                            <th class="fw-light fst-italic text-danger">
+                                -${{ (income_total - income_transaction_total) }}
                             </th>
                         {% endif %}
                     </tr>
@@ -283,17 +283,17 @@
                             <td>{{ row.name }}</td>
                             <td>${{ row.planned_amount }}</td>
                             <td>${{ inc_category_totals[row.name] }}</td>
-                            {% if -1 * (row.planned_amount - inc_category_totals[row.name]) < row.planned_amount %}
-                                <td class="text-danger">
-                                    -${{ (row.planned_amount - inc_category_totals[row.name]) }}
+                            {% if (row.planned_amount - inc_category_totals[row.name]) < 0 %}
+                                <td class="text-success">
+                                    +${{ -1 * (row.planned_amount - inc_category_totals[row.name]) }}
                                 </td>
                                 {% elif (row.planned_amount - inc_category_totals[row.name]) == 0 %}
                                     <td>
                                         ${{ (row.planned_amount - inc_category_totals[row.name]) }}
                                     </td>
                                 {% else %}
-                                    <td class="text-success">
-                                        +${{ -1 * (row.planned_amount - inc_category_totals[row.name]) }}
+                                    <td class="text-danger">
+                                        -${{ (row.planned_amount - inc_category_totals[row.name]) }}
                                     </td>
                             {% endif %}
                         </tr>

@@ -17,7 +17,8 @@ class User(db.Model, UserMixin):
     income_transactions = db.relationship('IncomeTransactions', backref='inc_tx_user_id', lazy=True)
     expense_categories = db.relationship('ExpenseCategories', backref='exp_cat_user_id', lazy=True)
     income_categories = db.relationship('IncomeCategories', backref='inc_cat_user_id', lazy=True)
-    starting_balance = db.relationship('StartingBalance', backref='balance_id', lazy=True)
+    starting_balance = db.relationship('StartingBalance', backref='id_balance', lazy=True)
+    time_stamps = db.relationship('TimeStamps', backref='stamp_time', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
@@ -41,7 +42,8 @@ class IncomeCategories(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(20), nullable=False)
     planned_amount = db.Column(db.Integer, nullable=False)
-    income_transactions = db.relationship('IncomeTransactions', cascade='all, delete', backref='inc_category_name', lazy=True)
+    income_transactions = db.relationship('IncomeTransactions', cascade='all, delete', backref='inc_category_name',
+                                          lazy=True)
 
     def __repr__(self):
         return f"Income Category('{self.name}', '{self.planned_amount}')"
@@ -78,3 +80,8 @@ class StartingBalance(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     starting_balance = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DATETIME, nullable=False, default=datetime.utcnow())
+
+
+class TimeStamps(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DATETIME, nullable=False, primary_key=True)

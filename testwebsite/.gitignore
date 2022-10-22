@@ -5,3 +5,5 @@ __pycache__/
 site.db
 testwebsite/site.db
 __init__.pyc
+*.xlsx
+*.csv

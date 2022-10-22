@@ -8,23 +8,33 @@ from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy.exc import SQLAlchemyError as Err
 from datetime import date
 import calendar
+import pandas as pd
 
-today = date.today()
-end_of_month = calendar.monthrange(date.today().year, date.today().month)[1]
+today = date.today().day
+start_of_month = calendar.monthrange(date.today().year, date.today().month)[0]
 
 
 # resets all transactions for all users once the end of the month comes
 # todo throws error:SAWarning: Multiple rows returned with uselist=False for lazily-loaded attribute
 #  'ExpenseTransactions.exp_category_name'
-def reset_transactions(today_date, eom):
-    if today_date == eom:
+# 1) create excel or CSV file for previous months txns
+# 2) clear all txns for month
+# 3) update expense categories to new month
+def monthly_reset(today_date, som):
+    if today_date == som:
+        # create file of all txns
+        # clear all txns for all users
         stmt = db.session.query(User).all()
         for user in stmt:
             exp_tx = db.session.query(ExpenseTransactions). \
                 filter(ExpenseTransactions.user_id == user.id).all()
             for tx in exp_tx:
-                db.session.delete(tx)
-                db.session.commit()
+                try:
+                    db.session.delete(tx)
+                    db.session.commit()
+                    print(f"{user}: Transactions Cleared!")
+                except Err as err:
+                    print(f"SQL Error: {err}")
         return "Transactions Reset"
 
 
@@ -271,3 +281,6 @@ def transactions():
 @app.route("/about")
 def about():
     return render_template("./about.html", title='About')
+
+
+monthly_reset(today, start_of_month)

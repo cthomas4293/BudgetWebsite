@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
 
 class ExpenseCategories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Integer, nullable=False)
+    day_of_month = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(20), nullable=False)
     planned_amount = db.Column(db.Integer, nullable=False)
@@ -34,7 +34,7 @@ class ExpenseCategories(db.Model):
                                            lazy=True)
 
     def __repr__(self):
-        return f"Expense Category('{self.name}', '{self.planned_amount}')"
+        return f"Expense Category('{self.name}', '{self.planned_amount}', Due on: {self.day_of_month})"
 
 
 class IncomeCategories(db.Model):

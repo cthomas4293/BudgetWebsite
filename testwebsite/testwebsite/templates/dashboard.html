@@ -7,9 +7,15 @@
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     {% if starting_balance %}
-                        ${{ starting_balance[-1].starting_balance }}
+                        {% if starting_balance[-1].starting_balance < 0 %}
+                                <span>${{ -1 * (starting_balance[-1].starting_balance) }}</span>
+                            {% elif starting_balance[-1].starting_balance == 0 %}
+                                ${{ starting_balance[-1].starting_balance }}
+                            {% else %}
+                                <span>${{ starting_balance[-1].starting_balance }}</span>
+                        {% endif %}
                         {% else %}
-                        $0.00
+                            $--.-
                     {% endif %}
                 </button>
 
@@ -59,9 +65,9 @@
             <div class="col-5 mt-5 p-2 d-flex flex-column align-items-center" style="background-color: #ebedef">
                 <div class="pb-2 d-flex justify-content-center flex-column text-center" style="width: 65%">
                     {% if starting_balance %}
-                        {% if (starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total > 0 %}
+                        {% if (starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total > starting_balance[-1].starting_balance %}
                             <p class="mt-3 fs-2 m-0 text-success">+{{ (((((starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total)/ starting_balance[-1].starting_balance) - 1) * 100) | round(1, 'ceil') }}%</p>
-                            {% elif (starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total == 0 %}
+                            {% elif (starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total == starting_balance[-1].starting_balance %}
                                 <p class="mt-3 fs-2 m-0">0.0%</p>
                             {% else %}
                             <p class="mt-3 fs-2 m-0 text-danger">{{ (((((starting_balance[-1].starting_balance + income_transaction_total) - expense_transaction_total)/ starting_balance[-1].starting_balance) - 1) * 100) | round(1, 'ceil') }}%</p>
@@ -72,12 +78,12 @@
                     <p class="fs-6 m-0 pb-3" style="border-bottom: 1px dashed darkgray">Increase in Total Savings</p>
                 </div>
                 <div class="d-flex justify-content-center flex-column text-center" style="width: 65%">
-                    {% if income_transaction_total - expense_transaction_total < 0 %}
+                    {% if (income_transaction_total - expense_transaction_total) + starting_balance[-1].starting_balance < 0 %}
                         <p class="fs-2 m-0 text-danger">-${{ -1 * (income_transaction_total - expense_transaction_total) }}</p>
-                        {% elif income_transaction_total - expense_transaction_total == 0 %}
+                        {% elif (income_transaction_total - expense_transaction_total) + starting_balance[-1].starting_balance == 0 %}
                             <p class="fs-2 m-0">$0</p>
                         {% else %}
-                            <p class="fs-2 m-0 text-success">+${{ income_transaction_total - expense_transaction_total }}</p>
+                            <p class="fs-2 m-0 text-success">+${{ (income_transaction_total - expense_transaction_total) + starting_balance[-1].starting_balance }}</p>
                     {% endif %}
                     <p class="mb-3 fs-6 m-0">Saved This Month</p>
                 </div>
@@ -134,7 +140,17 @@
                     </tr>
                     {% for row in expense_categories %}
                         <tr>
-                            <td>{{ row.date }}</td>
+                            {% if row.day_of_month[-1:] | int == 0 or row.day_of_month[-1:] | int >= 4 %}
+                                <td>Due on {{ row.day_of_month[-2:] }}th of month</td>
+                                {% elif row.day_of_month[-1:] | int == 1 %}
+                                    <td>Due on {{ row.day_of_month[-2:] }}st of month</td>
+                                {% elif row.day_of_month[-1:] | int == 2 %}
+                                    <td>Due on {{ row.day_of_month[-2:] }}nd of month</td>
+                                {% elif row.day_of_month[-1:] | int == 3 %}
+                                    <td>Due on {{ row.day_of_month[-2:] }}rd of month</td>
+                                {% else  %}
+                                    <td>Due on --rd of month</td>
+                            {% endif %}
                             <td>{{ row.name }}</td>
                             <td>${{ row.planned_amount }}</td>
                             <td>${{ exp_category_totals[row.name] }}</td>

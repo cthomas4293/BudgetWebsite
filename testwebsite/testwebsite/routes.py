@@ -101,7 +101,7 @@ def dashboard():
                     return redirect(url_for('dashboard'))
             # Adding Expense Category
             elif add_expense_category_form.validate_on_submit() and add_expense_category_form.expense_name.data:
-                category = ExpenseCategories(date=add_expense_category_form.data['expense_date'],
+                category = ExpenseCategories(day_of_month=add_expense_category_form.data['expense_date'],
                                              user_id=current_user.id,
                                              name=add_expense_category_form.expense_name.data,
                                              planned_amount=add_expense_category_form.expense_planned.data)

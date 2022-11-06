@@ -159,6 +159,8 @@ def dashboard():
                                        inc_category_totals=inc_category_totals)
         # GET Request
         else:
+            if starting_balance:
+                print("STARTING BALANCE")
             return render_template('./dashboard.html', title='Dashboard', balance_form=balance_form,
                                    add_expense_category_form=add_expense_category_form,
                                    add_income_category_form=add_income_category_form,
